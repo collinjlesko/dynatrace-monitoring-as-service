@@ -149,6 +149,7 @@ var server = http.createServer(function (req, res) {
 			}
 
 			// get a random quote!
+			status = "I was too lazy to implement a random quote generator. You gotta live with this one: Be Humble in Life!"
 			
 			var body = Buffer.concat(bodyChunks);
 			log(SEVERITY_DEBUG, 'BODY: ' + body);
