@@ -29,6 +29,6 @@ for (( i=1; i<=$NO_INSTANCES; i++))
 do
   INSTANCE_NAME=frontend-app-instance-$i
   echo "$INSTANCE_NAME:$BIND_PORT - BUILD: $BUILD_NUMBER"
-  # sudo docker run --name frontend-app-instance-$i -p $BIND_PORT:80 -d frontend-app:latest -e BUILD_NUMBER=$BUILD_NUMBER
+  sudo docker run --name $INSTANCE_NAME -p $BIND_PORT:80 -e BUILD_NUMBER=$BUILD_NUMBER -d frontend-app:latest
   BIND_PORT=$(($BIND_PORT+1))
 done
