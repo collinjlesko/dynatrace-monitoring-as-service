@@ -1,1 +1,1 @@
-sudo docker build -t frontend-app .
+sudo docker build -t backend-service .
