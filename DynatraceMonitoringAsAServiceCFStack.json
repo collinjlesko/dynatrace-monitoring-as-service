@@ -1,0 +1,375 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Dynatrace ACM Monitoring as a Service Workshop: https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service",
+    "Parameters": {
+        "DownloadDTMaaSGitHubRepo": {
+            "Description": "Step 0: Download dynatrace-monitoring-as-service GitHub repo (only works once public)",
+            "Type": "String",
+            "Default": "no",
+            "AllowedValues": [
+                "yes",
+                "no"
+            ]
+        },        
+        "UseDynatraceOneAgent": {
+            "Description": "Step 1 for Monitoring as a Service: Shall we install the OneAgent?",
+            "Type": "String",
+            "Default": "no",
+            "AllowedValues": [
+                "yes",
+                "no"
+            ]
+        },
+        "InstallDynatraceCLI": {
+            "Description": "Step 2 for Monitoring as a Service: Download & Build Dynatrace CLI Container?",
+            "Type": "String",
+            "Default": "no",
+            "AllowedValues": [
+                "yes",
+                "no"
+            ]
+        },               
+        "DynatraceTenantURL": {
+            "Description": "Your full Dynatrace Tenant URL. For SaaS it is e.g: https://<YOURTENANTID>.live.dynatrace.com. For Managed something like https://yourserver/e/abcdefgh-1234-5678-abcd-55a7265f572f",
+            "Type": "String",
+            "AllowedPattern" : "https:\/\/.*"
+        },
+        "DynatraceAPIToken": {
+            "Description": "Your Dynatrace API Token. If you dont have one create one first in your Dynatrace Web UI via Settings -> Integration -> Dynatrace API",
+            "Type": "String",
+            "MinLength" : "21"
+        },
+        "DynatraceOneAgentURL": {
+            "Description": "Full Download Script URL. Go to Deploy Dynatrace -> Start Installation -> Linux and copy JUST the URL in the wget command and PASTE it here",
+            "Type": "String",
+            "AllowedPattern" : "https:\/\/.*"
+        },
+        "KeyName": {
+            "Description": "Name of Existing EC2 Key Pair which we will use to launch new EC2 Instances",
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "ConstraintDescription": "Must be the name of an existing Key Pair",
+            "MinLength" : "1",
+            "MaxLength" : "255"
+        },
+        "InstanceType": {
+            "Description": "Instance Types for the EC2 Instance we create",
+            "Type": "String",
+            "Default": "t2.micro",
+            "AllowedValues": [
+                "t2.micro",
+                "t2.small",
+                "t2.medium"
+            ]
+        }
+    },
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": { "default": "Workshop Automation Steps"},
+                    "Parameters": [ "DownloadDTMaaSGitHubRepo", "UseDynatraceOneAgent", "InstallDynatraceCLI" ]
+                },
+                {
+                    "Label": { "default": "Dynatrace"},
+                    "Parameters": [ "DynatraceTenantURL", "DynatraceAPIToken", "DynatraceOneAgentURL" ]
+                },
+                {
+                    "Label": {"default": "Deployment"},
+                    "Parameters": ["InstanceType", "KeyName"]
+                }
+            ]
+        }
+    },
+    "Conditions": {
+        "InstallOneAgent" : {"Fn::Equals" : [{"Ref" : "UseDynatraceOneAgent"}, "yes"]},
+        "InstallDTCLI" : {"Fn::Equals" : [{"Ref" : "InstallDynatraceCLI"}, "yes"]},
+        "DownloadTutorialGitHub" : {"Fn::Equals" : [{"Ref" : "DownloadDTMaaSGitHubRepo"}, "yes"]}
+    },    
+    "Mappings": {
+        "RegionMap": {
+            "us-east-1": {
+                "AMI": "ami-97785bed"
+            },
+            "us-east-2": {
+                "AMI": "ami-f63b1193"
+            },
+            "us-west-1": {
+                "AMI": "ami-824c4ee2"
+            },
+            "us-west-2": {
+                "AMI": "ami-f2d3638a"
+            },
+            "ca-central-1" : {
+                "AMI" : "ami-a954d1cd"
+            },
+            "eu-central-1" : {
+                "AMI": "ami-5652ce39"
+            },
+            "eu-west-1" : {
+                "AMI" : "ami-d834aba1"
+            },
+            "eu-west-2" : {
+                "AMI" : "ami-403e2524"
+            },
+            "eu-west-3" : {
+                "AMI" : "ami-8ee056f3"
+            },
+            "ap-south-1" : {
+                "AMI" : "ami-531a4c3c"
+            },
+            "ap-northeast-2" : {
+                "AMI" : "ami-863090e8"
+            },
+            "ap-southeast-1" : {
+                "AMI" : "ami-68097514"
+            },
+            "ap-southeast-2" : {
+                "AMI" : "ami-942dd1f6"
+            },
+            "ap-northeast-1" : {
+                "AMI" : "ami-ceafcba8"
+            },
+            "sa-east-1" : {
+                "AMI" : "ami-84175ae8"
+            }
+        }
+    },
+    "Resources": {
+        "SSMParamDtTenantTUrl": {
+            "Type": "AWS::SSM::Parameter",
+            "Properties": {
+                "Name": "ACM_MAAS_DT_TENANT_URL",
+                "Type": "String",
+                "Value": {
+                    "Ref": "DynatraceTenantURL"
+                },
+                "Description": "Dynatrace Tenant URL including your Environment in case you run managed"
+            }
+        },
+        "SSMParamDtApiToken": {
+            "Type": "AWS::SSM::Parameter",
+            "Properties": {
+                "Name": "ACM_MAAS_DT_API_TOKEN",
+                "Type": "String",
+                "Value": {
+                    "Ref": "DynatraceAPIToken"
+                },
+                "Description": "Dynatrace API Token"
+            }
+        },
+
+        "DynatraceEC2InstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "InstanceProfileName": "ACM_MAAS_DT_DynatraceEC2InstanceProfile",
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "DynatraceEC2InstanceProfileRole"
+                    }
+                ]
+            }
+        },
+        "DynatraceEC2InstanceProfileRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "ACM_MAAS_DT_DynatraceEC2InstanceProfileRole",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                            }
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "DynatraceEC2CodeDeployInstanceProfilePolicy",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "s3:Get*",
+                                        "s3:List*"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "SecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Enable HTTP access via port 80 and SSH access.",
+                "GroupName": "Dynatrace ACM MaaS Tutorial Security Group",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "ACMDTMaaSInstance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "RegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "AMI"
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "DynatraceEC2InstanceProfile"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "SecurityGroup"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ACM Dynatrace MaaS Workshop"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -x\n",
+                                "# First: we download and install the Dynatrace OneAgent\n",
+                                "yum update -y\n",
+                                { 
+                                    "Fn::If" : [
+                                        "InstallOneAgent",
+                                        {
+                                            "Fn::Join" : [
+                                                "", 
+                                                [
+                                                    "yum install ruby wget -y\n",
+                                                    "wget --no-check-certificate -O Dynatrace-OneAgent-Linux.sh \"",
+                                                    {
+                                                        "Ref": "DynatraceOneAgentURL"
+                                                    },
+                                                    "\"\n",
+                                                    "sudo /bin/sh Dynatrace-OneAgent-Linux.sh APP_LOG_CONTENT_ACCESS=1\n"
+                                                ]
+                                            ]
+                                        },
+                                        "# NO OneAgent to Install!!"
+                                ]},
+                                "\n",
+                                
+                                "# Second: We install required components such as docker, git ...\n",
+                                "yum install -y httpd\n",
+                                "yum install -y docker\n",
+                                "service docker start\n",
+                                "yum install -y git\n",
+
+                                "# Third: we get our Dynatrace CLI Project and build the docker container\n",
+                                { 
+                                    "Fn::If" : [
+                                        "InstallDTCLI",
+                                        {
+                                            "Fn::Join" : [
+                                                "",
+                                                [
+                                                    "git clone https://github.com/Dynatrace/dynatrace-cli.git\n",
+                                                    "cd dynatrace-cli\n",
+                                                    "docker build -t dynatrace-cli .\n",
+                                                    "echo \"{\"apitoken\" : \"",
+                                                    {
+                                                        "Ref" : "DynatraceAPIToken"
+                                                    },
+                                                    "\", \"tenanthost\" : \"",
+                                                    {
+                                                        "Ref" : "DynatraceTenantURL"
+                                                    },
+                                                    "}\" > dtconfig.json\n",
+                                                    "cd ..\n"
+                                                ]
+                                            ]
+                                        },
+                                        "# NO DT CLI to Install!!"
+                                ]},
+
+                                "# Fourth: We can get our Monitoring as a Service GitHub Repo\n",
+                                {
+                                    "Fn::If" : [
+                                        "DownloadTutorialGitHub",
+                                        {
+                                            "Fn::Join" : 
+                                            ["",
+                                                [
+                                                    "git clone https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git\n",
+                                                    "cd dynatrace-monitoring-as-service\n",
+                                                    "bash ./build.sh\n",
+                                                    "cd ..\n"
+                                                ]
+                                            ]
+                                        },
+                                        "# No GitHub Tutorial Download!"
+                                    ]
+                                },
+
+                                "# Last: Get the latest CloudFormation package",
+                                "yum update -y aws-cfn-bootstrap",
+                                "# Start cfn-init",
+                                "/opt/aws/bin/cfn-init -s ${AWS::StackId} -r ProductionInstance --region ${AWS::Region} || error_exit 'Failed to run cfn-init'",
+                                "# Start up the cfn-hup daemon to listen for changes to the EC2 instance metadata",
+                                "/opt/aws/bin/cfn-hup || error_exit 'Failed to start cfn-hup'",
+                                "# All done so signal success",
+                                "/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackId} --resource StagingInstance --region ${AWS::Region}"
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "MyStackRegion": {
+            "Value": {
+                "Ref": "AWS::Region"
+            },
+            "Description": "The region where the stack was created."
+        },
+        "TutorialInstance": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "ACMDTMaaSInstance",
+                    "PublicDnsName"
+                ]
+            },
+            "Description": "The Public DNS of your ACMDTMaaSInstance System"
+        }     
+    }
+}
