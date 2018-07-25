@@ -14,12 +14,13 @@ else
 fi
 
 echo "upstream my-frontend {" > ${PWD}/conf.d/default.conf
+BIND_PORT=$BASE_PORT
 for (( i=1; i<=$NO_INSTANCES; i++))
 do
   echo "  server 172.17.0.1:$BIND_PORT weight=1;" >> ${PWD}/conf.d/default.conf
   BIND_PORT=$(($BIND_PORT+1))
 done
-echo "}server {location / {proxy_pass http://my-frontend;}}" > ${PWD}/conf.d/default.conf
+echo "}server {location / {proxy_pass http://my-frontend;}}" >> ${PWD}/conf.d/default.conf
 
 #!/bin/bash
 sudo bash ./stop_docker.sh
