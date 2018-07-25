@@ -109,129 +109,146 @@ function sleep(time) {
 // This is our main HttpServer Handler
 // ======================================================================
 var server = http.createServer(function (req, res) {
-    if (req.method === 'POST') {
-        var body = '';
 
-        req.on('data', function(chunk) {
-            body += chunk;
-        });
+	try {
+		if (req.method === 'POST') {
+			var body = '';
 
-        req.on('end', function() {
-            if (req.url === '/') {
-                log(SEVERITY_DEBUG, 'Received message: ' + body);
-            } else if (req.url = '/scheduled') {
-                log(SEVERITY_DEBUG, 'Received task ' + req.headers['x-aws-sqsd-taskname'] + ' scheduled at ' + req.headers['x-aws-sqsd-scheduled-at']);
-            }
-
-            res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});
-            res.end();
-        });
-    } else if (req.url.startsWith("/api")) {
-		var url = require('url').parse(req.url, true);
-		var closeResponse = true;
-
-        // sleep a bit :-)
-		var sleeptime = parseInt(url.query["sleep"]);
-		if(sleeptime === 0) sleeptime = minSleep;
-		log(SEVERITY_DEBUG, "Sleeptime: " + sleeptime);
-		sleep(sleeptime);
-
-		// figure out which API call they want to execute
-        var status = "Unkown API Call";
-		if(url.pathname === "/api/sleeptime") {
-			// Usage: /api/sleeptime?min=1234 
-			var sleepValue = parseInt(url.query["min"]);
-			if(sleepValue >= 0 && sleepValue <= 10000) minSleep = sleepValue;
-			status = "Minimum Sleep Time set to " + minSleep;
-		}
-		if(url.pathname === "/api/echo") {
-			// Usage: /api/echo?text=your text to be echoed!
-			status = "Thanks for saying: " + url.query["text"];
-		}
-		if(url.pathname === "/api/login") {
-			// Usage: /api/login?username=your user name 
-			status = "Welcome " + url.query["username"];
-		}
-		if(url.pathname === "/api/invoke") {
-			// count the invokes for failed requests
-			var returnStatusCode = 200;
-			if(failInvokeRequestPercentage > 0) {
-				invokeRequestCount++;
-				var failRequest = (invokeRequestCount % failInvokeRequestPercentage);
-				if(failRequest == 0) {
-					returnStatusCode = 500;
-					invokeRequestCount = 0;
-				}
-			}
-
-			// Usage: /api/invoke?url=http://www.yourdomain.com 
-			var urlRequest = url.query["url"];
-			status = "Trying to invoke remote call to: " + urlRequest;
-			
-			var http = null;
-			if(urlRequest.startsWith("https")) http = require("https");
-			else http = require("http");
-			closeResponse = false;
-			var options = {
-              	host: urlRequest,
-              	path: '/'
-            };
-			var result = http.get(urlRequest, function(getResponse) {
-				log(SEVERITY_DEBUG, 'STATUS: ' + getResponse.statusCode);
-				log(SEVERITY_DEBUG, 'HEADERS: ' + JSON.stringify(getResponse.headers));
-
-				// Buffer the body entirely for processing as a whole.
-				var bodyChunks = [];
-				getResponse.on('data', function(chunk) {
-					bodyChunks.push(chunk);
-				}).on('end', function() {
-					var body = Buffer.concat(bodyChunks);
-				  	log(SEVERITY_DEBUG, 'BODY: ' + body);
-				  	status = "Request to '" + url.query["url"] + "' returned with HTTP Status: " + getResponse.statusCode + " and response body length: " + body.length;
-				  	res.writeHead(returnStatusCode, returnStatusCode == 200 ? 'OK' : 'ERROR', {'Content-Type': 'text/plain'});	
-				  	res.write(status);
-				  	res.end();
-				}).on('error', function(error) {
-				  	status = "Request to '" + url.query["url"] + "' returned in an error: " + error;
-				  	res.writeHead(returnStatusCode, returnStatusCode == 200 ? 'OK' : 'ERROR', {'Content-Type': 'text/plain'});	
-				  	res.write(status);
-				  	res.end();					
-				  	log(SEVERITY_INFO, status);
-				})
+			req.on('data', function(chunk) {
+				body += chunk;
 			});
-		}
-		if(url.pathname === "/api/version") {
-			if (url.query["newBuildNumber"] && url.query["newBuildNumber"] != null) {
-				var newBuildNumber = url.query["newBuildNumber"];
-				log(SEVERITY_WARNING, "Somebody is changing! buildNumber from " + buildNumber + " to " + newBuildNumber);
 
-				init(newBuildNumber);
+			req.on('end', function() {
+				if (req.url === '/') {
+					log(SEVERITY_DEBUG, 'Received message: ' + body);
+				} else if (req.url = '/scheduled') {
+					log(SEVERITY_DEBUG, 'Received task ' + req.headers['x-aws-sqsd-taskname'] + ' scheduled at ' + req.headers['x-aws-sqsd-scheduled-at']);
+				}
+
+				res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});
+				res.end();
+			});
+		} else if (req.url.startsWith("/api")) {
+			var url = require('url').parse(req.url, true);
+			var closeResponse = true;
+
+			// sleep a bit :-)
+			var sleeptime = parseInt(url.query["sleep"]);
+			if(sleeptime === 0) sleeptime = minSleep;
+			log(SEVERITY_DEBUG, "Sleeptime: " + sleeptime);
+			sleep(sleeptime);
+
+			// figure out which API call they want to execute
+			var status = "Unkown API Call";
+			if(url.pathname === "/api/sleeptime") {
+				// Usage: /api/sleeptime?min=1234 
+				var sleepValue = parseInt(url.query["min"]);
+				if(sleepValue >= 0 && sleepValue <= 10000) minSleep = sleepValue;
+				status = "Minimum Sleep Time set to " + minSleep;
+			}
+			if(url.pathname === "/api/echo") {
+				// Usage: /api/echo?text=your text to be echoed!
+				status = "Thanks for saying: " + url.query["text"];
+			}
+			if(url.pathname === "/api/login") {
+				// Usage: /api/login?username=your user name 
+				status = "Welcome " + url.query["username"];
+			}
+			if(url.pathname === "/api/invoke") {
+				// count the invokes for failed requests
+				var returnStatusCode = 200;
+				if(failInvokeRequestPercentage > 0) {
+					invokeRequestCount++;
+					var failRequest = (invokeRequestCount % failInvokeRequestPercentage);
+					if(failRequest == 0) {
+						returnStatusCode = 500;
+						invokeRequestCount = 0;
+					}
+				}
+
+				// Usage: /api/invoke?url=http://www.yourdomain.com 
+				var urlRequest = url.query["url"];
+				status = "Trying to invoke remote call to: " + urlRequest;
+				
+				var http = null;
+				if(urlRequest.startsWith("https")) http = require("https");
+				else http = require("http");
+				closeResponse = false;
+				var options = {
+					host: urlRequest,
+					path: '/'
+				};
+				
+				var result = http.get(urlRequest, function(getResponse) {
+					log(SEVERITY_INFO, getResponse);
+					log(SEVERITY_DEBUG, 'STATUS: ' + getResponse.statusCode);
+					log(SEVERITY_DEBUG, 'HEADERS: ' + JSON.stringify(getResponse.headers));
+
+					// Buffer the body entirely for processing as a whole.
+					var bodyChunks = [];
+					getResponse.on('data', function(chunk) {
+						bodyChunks.push(chunk);
+					}).on('end', function() {
+						var body = Buffer.concat(bodyChunks);
+							log(SEVERITY_DEBUG, 'BODY: ' + body);
+							status = "Request to '" + url.query["url"] + "' returned with HTTP Status: " + getResponse.statusCode + " and response body length: " + body.length;
+							res.writeHead(returnStatusCode, returnStatusCode == 200 ? 'OK' : 'ERROR', {'Content-Type': 'text/plain'});	
+							res.write(status);
+							res.end();
+					}).on('error', function(error) {
+							status = "Request to '" + url.query["url"] + "' returned in an error: " + error;
+							res.writeHead(returnStatusCode, returnStatusCode == 200 ? 'OK' : 'ERROR', {'Content-Type': 'text/plain'});	
+							res.write(status);
+							res.end();					
+							log(SEVERITY_INFO, status);
+					})
+				});	
+
+				result.on('error', function(err) {
+					console.log(err);
+				});
+
+			}
+			if(url.pathname === "/api/version") {
+				if (url.query["newBuildNumber"] && url.query["newBuildNumber"] != null) {
+					var newBuildNumber = url.query["newBuildNumber"];
+					log(SEVERITY_WARNING, "Somebody is changing! buildNumber from " + buildNumber + " to " + newBuildNumber);
+
+					init(newBuildNumber);
+				}
+
+				// usage: /api/version
+				// simply returns the build number as defined in BUILD_NUMBER env-variable which is specified
+				status = "Running build number: " + buildNumber;
+			}
+			if(url.pathname === "/api/causeerror") {
+				log(SEVERITY_ERROR, "somebody called /api/causeerror");
+				status = "We just caused an error log entry"
 			}
 
-			// usage: /api/version
-			// simply returns the build number as defined in BUILD_NUMBER env-variable which is specified
-			status = "Running build number: " + buildNumber;
+			// only close response handler if we are done with work!
+			if(closeResponse) {
+			res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});	
+			res.write(status);
+			res.end();
+			}
 		}
-		if(url.pathname === "/api/causeerror") {
-			log(SEVERITY_ERROR, "somebody called /api/causeerror");
-			status = "We just caused an error log entry"
+		else
+		{
+			res.writeHead(200, 'OK', {'Content-Type': 'text/html'});
+
+			// replace buildnumber and background color
+			var finalHtml = html.replace("BACKGROUND-COLOR", getBackgroundColor()).replace("BUILD_NUMBER", buildNumber);
+			res.write(finalHtml);
+			res.end();
 		}
 
-		// only close response handler if we are done with work!
-		if(closeResponse) {
-		   res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});	
-		   res.write(status);
-		   res.end();
-		}
 	}
-	else
-	{
-		res.writeHead(200, 'OK', {'Content-Type': 'text/html'});
-
-		// replace buildnumber and background color
-		var finalHtml = html.replace("BACKGROUND-COLOR", getBackgroundColor()).replace("BUILD_NUMBER", buildNumber);
-        res.write(finalHtml);
-        res.end();
+	catch(e) {
+		log(SEVERITY_ERROR, "Exception")
+		res.writeHead(500, 'Error', {'Content-Type': 'text/plain'})
+		res.write("ERROR");
+		res.end();
 	}
 	
 	requestCount++;

@@ -149,14 +149,7 @@ var server = http.createServer(function (req, res) {
 			}
 
 			// get a random quote!
-			status = "I was too lazy to implement a random quote generator. You gotta live with this one: Be Humble in Life!"
-			
-			var body = Buffer.concat(bodyChunks);
-			log(SEVERITY_DEBUG, 'BODY: ' + body);
-			status = "Request to '" + url.query["url"] + "' returned with HTTP Status: " + getResponse.statusCode + " and response body length: " + body.length;
-			res.writeHead(returnStatusCode, returnStatusCode == 200 ? 'OK' : 'ERROR', {'Content-Type': 'text/plain'});	
-			res.write(status);
-			res.end();
+			status = "I was too lazy to implement a random quote generator. You gotta live with this one: Be Humble in Life!"			
 		}
 		if(url.pathname === "/api/version") {
 			if (url.query["newBuildNumber"] && url.query["newBuildNumber"] != null) {
@@ -185,10 +178,7 @@ var server = http.createServer(function (req, res) {
 	else
 	{
 		res.writeHead(200, 'OK', {'Content-Type': 'text/html'});
-
-		// replace buildnumber and background color
-		var finalHtml = html.replace("BACKGROUND-COLOR", getBackgroundColor()).replace("BUILD_NUMBER", buildNumber);
-        res.write(finalHtml);
+        res.write("empty response");
         res.end();
 	}
 	
