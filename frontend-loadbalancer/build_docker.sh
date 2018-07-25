@@ -1,1 +1,1 @@
-docker build -t frontend-loadbalancer-nginx .
+sudo docker build -t frontend-loadbalancer-nginx .
