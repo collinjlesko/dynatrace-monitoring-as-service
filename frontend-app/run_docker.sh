@@ -37,7 +37,7 @@ do
   sudo docker run --name $INSTANCE_NAME -p $BIND_PORT:80 -e BUILD_NUMBER=$BUILD_NUMBER -e DT_TAGS="BUILD_NUMBER=$BUILD_NUMBER SERVICE_TYPE=FRONTEND" -e DT_CUSTOM_PROP="BUILD_NUMBER=$BUILD_NUMBER BIND_PORT=$BIND_PORT" -d frontend-app:latest
 
   # Step 2: the following line leverages DT_NODE_ID to differentiate each individual container instance as its own Process Group Instance
-  # sudo docker run --name $INSTANCE_NAME -p $BIND_PORT:80 -e BUILD_NUMBER=$BUILD_NUMBER -e DT_NODE_ID=$i -e DT_TAGS="BUILD_NUMBER=$BUILD_NUMBER SERVICE_TYPE=FRONTEND" -e DT_CUSTOM_PROP="BUILD_NUMBER=$BUILD_NUMBER BIND_PORT=$BIND_PORT" -d frontend-app:latest
+  # sudo docker run --name $INSTANCE_NAME -p $BIND_PORT:80 -e BUILD_NUMBER=$BUILD_NUMBER -e DT_NODE_ID=$BUILD_NUMBER -e DT_TAGS="BUILD_NUMBER=$BUILD_NUMBER SERVICE_TYPE=FRONTEND" -e DT_CUSTOM_PROP="BUILD_NUMBER=$BUILD_NUMBER BIND_PORT=$BIND_PORT" -d frontend-app:latest
 
   BIND_PORT=$(($BIND_PORT+1))
 done

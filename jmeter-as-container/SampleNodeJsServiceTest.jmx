@@ -31,9 +31,9 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">1</stringProp>
+          <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
         <stringProp name="ThreadGroup.ramp_time">30</stringProp>
         <longProp name="ThreadGroup.start_time">1444323045000</longProp>
         <longProp name="ThreadGroup.end_time">1444323045000</longProp>
@@ -47,9 +47,13 @@
           <boolProp name="CookieManager.clearEachIteration">false</boolProp>
         </CookieManager>
         <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers"/>
+        </HeaderManager>
+        <hashTree/>
         <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Set Dynatrace Headers" enabled="true">
           <boolProp name="resetInterpreter">true</boolProp>
-          <stringProp name="parameters">easyTravel.JMeterTests.</stringProp>
+          <stringProp name="parameters">Testing Sample NodeJs</stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jmeter.protocol.http.control.HeaderManager;
@@ -59,14 +63,13 @@ import java.util;
 // -------------------------------------------------------------------------------------
 // Will set the x-dynatrace-test Header.
 // -------------------------------------------------------------------------------------
-String SN = &quot;Testing Sample NodeJs&quot;
+String SN = (bsh.args.length &gt; 0) ? bsh.args[0] : &quot;Test Scenario&quot;;
 String TSN = sampler.getName();
 String VU = ctx.getThreadGroup().getName() + ctx.getThreadNum();
-String headerValue = &quot;SN=&quot;+ SN + &quot;TSN=&quot; + TSN + &quot;;VU=&quot; + VU;
+String headerValue = &quot;SN=&quot;+ SN + &quot;;TSN=&quot; + TSN + &quot;;VU=&quot; + VU + &quot;;&quot;;
 
 // -------------------------------------------
 // log it out &amp; set header
-print(&quot;Setting Dynatrace Headers: &quot; + headerValue);
 HeaderManager hm = sampler.getHeaderManager();
 hm.removeHeaderNamed(&quot;x-dynatrace-test&quot;);
 hm.add(new org.apache.jmeter.protocol.http.control.Header(&quot;x-dynatrace-test&quot;, headerValue));</stringProp>
@@ -91,7 +94,12 @@ hm.add(new org.apache.jmeter.protocol.http.control.Header(&quot;x-dynatrace-test
           <boolProp name="HTTPSampler.monitor">false</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
         </HTTPSamplerProxy>
-        <hashTree/>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers"/>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
         <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Wait 500ms" enabled="true">
           <stringProp name="ConstantTimer.delay">500</stringProp>
           <stringProp name="TestPlan.comments">	</stringProp>
@@ -117,7 +125,12 @@ hm.add(new org.apache.jmeter.protocol.http.control.Header(&quot;x-dynatrace-test
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="TestPlan.comments">	</stringProp>
         </HTTPSamplerProxy>
-        <hashTree/>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers"/>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
         <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Wait 500ms" enabled="true">
           <stringProp name="ConstantTimer.delay">500</stringProp>
           <stringProp name="TestPlan.comments">	</stringProp>
@@ -143,7 +156,12 @@ hm.add(new org.apache.jmeter.protocol.http.control.Header(&quot;x-dynatrace-test
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="TestPlan.comments">	</stringProp>
         </HTTPSamplerProxy>
-        <hashTree/>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers"/>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
       </hashTree>
       <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
