@@ -135,33 +135,20 @@
         }
     },
     "Resources": {
-        "SSMParamDtTenantTUrl": {
-            "Type": "AWS::SSM::Parameter",
-            "Properties": {
-                "Name": "ACM_MAAS_DT_TENANT_URL",
-                "Type": "String",
-                "Value": {
-                    "Ref": "DynatraceTenantURL"
-                },
-                "Description": "Dynatrace Tenant URL including your Environment in case you run managed"
-            }
-        },
-        "SSMParamDtApiToken": {
-            "Type": "AWS::SSM::Parameter",
-            "Properties": {
-                "Name": "ACM_MAAS_DT_API_TOKEN",
-                "Type": "String",
-                "Value": {
-                    "Ref": "DynatraceAPIToken"
-                },
-                "Description": "Dynatrace API Token"
-            }
-        },
-
         "DynatraceEC2InstanceProfile": {
             "Type": "AWS::IAM::InstanceProfile",
             "Properties": {
-                "InstanceProfileName": "ACM_MAAS_DT_DynatraceEC2InstanceProfile",
+                "InstanceProfileName": {
+                    "Fn::Join" : [
+                        "", 
+                        [
+                            "ACM_MAAS_DT_EC2ProfileName_",
+                            {
+                                "Ref": "AWS::StackName"
+                            }
+                        ]
+                    ]
+                },
                 "Path": "/",
                 "Roles": [
                     {
@@ -173,7 +160,17 @@
         "DynatraceEC2InstanceProfileRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
-                "RoleName": "ACM_MAAS_DT_DynatraceEC2InstanceProfileRole",
+                "RoleName": {
+                    "Fn::Join" : [
+                        "", 
+                        [
+                            "ACM_MAAS_DT_EC2ProfileRoleName_",
+                            {
+                                "Ref": "AWS::StackName"
+                            }
+                        ]
+                    ]
+                },
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
@@ -210,7 +207,17 @@
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
                 "GroupDescription": "Enable HTTP access via port 80 and SSH access.",
-                "GroupName": "Dynatrace ACM MaaS Tutorial Security Group",
+                "GroupName": {
+                    "Fn::Join" : [
+                        "", 
+                        [
+                            "ACM_MAAS_DT_EC2SecrutiyGroupName_",
+                            {
+                                "Ref": "AWS::StackName"
+                            }
+                        ]
+                    ]
+                },
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
@@ -256,7 +263,17 @@
                 "Tags": [
                     {
                         "Key": "Name",
-                        "Value": "ACM Dynatrace MaaS Workshop"
+                        "Value": {
+                            "Fn::Join" : [
+                                "", 
+                                [
+                                    "ACM_MAAS_DT_",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     }
                 ],
                 "UserData": {
@@ -275,11 +292,21 @@
                                                 "", 
                                                 [
                                                     "yum install ruby wget -y\n",
+                                                    "cd /\n",
                                                     "wget --no-check-certificate -O Dynatrace-OneAgent-Linux.sh \"",
                                                     {
                                                         "Ref": "DynatraceOneAgentURL"
                                                     },
                                                     "\"\n",
+                                                    "echo 'Ready to install & configure tags for OneAgent:'\n",
+                                                    "mkdir -p /var/lib/dynatrace/oneagent/agent/config\n",
+                                                    "cd /var/lib/dynatrace/oneagent/agent/config\n",
+                                                    "echo \"MaaSHost StackName=",
+                                                    {
+                                                        "Ref" : "AWS::StackName"
+                                                    },
+                                                    "\" > hostautotag.conf\n",
+                                                    "cd /",
                                                     "sudo /bin/sh Dynatrace-OneAgent-Linux.sh APP_LOG_CONTENT_ACCESS=1\n"
                                                 ]
                                             ]
@@ -302,19 +329,19 @@
                                             "Fn::Join" : [
                                                 "",
                                                 [
+                                                    "cd /home/ec2-user\n",
                                                     "git clone https://github.com/Dynatrace/dynatrace-cli.git\n",
                                                     "cd dynatrace-cli\n",
                                                     "docker build -t dynatrace-cli .\n",
-                                                    "echo \"{\"apitoken\" : \"",
+                                                    "echo \"{'apitoken' : '",
                                                     {
                                                         "Ref" : "DynatraceAPIToken"
                                                     },
-                                                    "\", \"tenanthost\" : \"",
+                                                    "', 'tenanthost' : '",
                                                     {
                                                         "Ref" : "DynatraceTenantURL"
                                                     },
-                                                    "}\" > dtconfig.json\n",
-                                                    "cd ..\n"
+                                                    "}\" > dtconfig.json\n"
                                                 ]
                                             ]
                                         },
@@ -329,10 +356,10 @@
                                             "Fn::Join" : 
                                             ["",
                                                 [
+                                                    "cd /home/ec2-user\n",
                                                     "git clone https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git\n",
                                                     "cd dynatrace-monitoring-as-service\n",
-                                                    "bash ./build.sh\n",
-                                                    "cd ..\n"
+                                                    "bash ./build.sh\n"
                                                 ]
                                             ]
                                         },

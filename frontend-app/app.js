@@ -192,6 +192,8 @@ var server = http.createServer(function (req, res) {
 						var body = Buffer.concat(bodyChunks);
 							log(SEVERITY_DEBUG, 'BODY: ' + body);
 							status = "Request to '" + url.query["url"] + "' returned with HTTP Status: " + getResponse.statusCode + " and response body length: " + body.length;
+							status += "\nHere are the first 200 characters of the body:\n";
+							status += body.substring(0, 200);
 							res.writeHead(returnStatusCode, returnStatusCode == 200 ? 'OK' : 'ERROR', {'Content-Type': 'text/plain'});	
 							res.write(status);
 							res.end();
@@ -205,7 +207,10 @@ var server = http.createServer(function (req, res) {
 				});	
 
 				result.on('error', function(err) {
-					console.log(err);
+					log(SEVERITY_ERROR, err);
+					res.writeHead(500, 'Error', {'Content-Type': 'text/plain'})
+					res.write(err);
+					res.end();
 				});
 
 			}
@@ -228,9 +233,9 @@ var server = http.createServer(function (req, res) {
 
 			// only close response handler if we are done with work!
 			if(closeResponse) {
-			res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});	
-			res.write(status);
-			res.end();
+				res.writeHead(200, 'OK', {'Content-Type': 'text/plain'});	
+				res.write(status);
+				res.end();
 			}
 		}
 		else
@@ -245,7 +250,6 @@ var server = http.createServer(function (req, res) {
 
 	}
 	catch(e) {
-		log(SEVERITY_ERROR, "Exception")
 		res.writeHead(500, 'Error', {'Content-Type': 'text/plain'})
 		res.write("ERROR");
 		res.end();
