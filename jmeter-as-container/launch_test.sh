@@ -4,4 +4,4 @@
 # ./run_test.sh testscript.jmx result.jtl http://yourserverip
 
 #!/bin/bash
-sudo docker run --name jmeter-test -d jmeter:latest -v ${PWD}:/jmeter ./jmeter.sh -n -t /jmeter/$1 -l $2 -JSERVERIP=$3
+sudo docker run --name jmeter-test -v "${PWD}/scripts":/scripts -rm -t jmeter ./jmeter/bin/jmeter.sh -n -t /scripts/$1 -l /scripts/$2 -JSERVERIP=$3
