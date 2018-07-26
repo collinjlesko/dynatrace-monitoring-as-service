@@ -190,10 +190,11 @@ var server = http.createServer(function (req, res) {
 						bodyChunks.push(chunk);
 					}).on('end', function() {
 						var body = Buffer.concat(bodyChunks);
-							log(SEVERITY_DEBUG, 'BODY: ' + body);
+						body= body.toString();
+						log(SEVERITY_DEBUG, 'BODY: ' + body);
 							status = "Request to '" + url.query["url"] + "' returned with HTTP Status: " + getResponse.statusCode + " and response body length: " + body.length;
-							status += "\nHere are the first 200 characters of the body:\n";
-							status += body.substring(0, 200);
+							status += "\n\nHere are the first 200 characters of the body:\n\n";
+							status += body.substr(0, 200);
 							res.writeHead(returnStatusCode, returnStatusCode == 200 ? 'OK' : 'ERROR', {'Content-Type': 'text/plain'});	
 							res.write(status);
 							res.end();

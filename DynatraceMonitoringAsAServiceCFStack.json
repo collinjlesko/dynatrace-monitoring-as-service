@@ -306,7 +306,7 @@
                                                         "Ref" : "AWS::StackName"
                                                     },
                                                     "\" > hostautotag.conf\n",
-                                                    "cd /",
+                                                    "cd /\n",
                                                     "sudo /bin/sh Dynatrace-OneAgent-Linux.sh APP_LOG_CONTENT_ACCESS=1\n"
                                                 ]
                                             ]
