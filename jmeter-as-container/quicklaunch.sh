@@ -1,4 +1,3 @@
 #!/bin/bash
-# usage: ./quicklaunch.sh http://yourserverip 
-rm -f scripts/result.jtl
-./launch_test.sh SampleNodeJsServiceTest.jmx result.jtl $1
+# usage: ./quicklaunch.sh http://yourserverip
+bash ./launch_test.sh SampleNodeJsServiceTest.jmx results $1
