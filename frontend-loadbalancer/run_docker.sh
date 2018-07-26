@@ -23,5 +23,4 @@ done
 echo "}server {location / {proxy_pass http://my-frontend;}}" >> ${PWD}/conf.d/default.conf
 
 #!/bin/bash
-sudo bash ./stop_docker.sh
 sudo docker run --name frontend-loadbalancer-nginx -v ${PWD}/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro -p 80:80 -d frontend-loadbalancer-nginx

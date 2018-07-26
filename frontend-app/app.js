@@ -210,7 +210,8 @@ var server = http.createServer(function (req, res) {
 				result.on('error', function(err) {
 					log(SEVERITY_ERROR, err);
 					res.writeHead(500, 'Error', {'Content-Type': 'text/plain'})
-					res.write(err);
+					if((err != null) && (typeof err == "string"))
+						res.write(err);
 					res.end();
 				});
 

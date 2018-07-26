@@ -27,7 +27,7 @@ echo "BUILD_NUMBER: $BUILD_NUMBER"
 BIND_PORT=$BASE_PORT
 for (( i=1; i<=$NO_INSTANCES; i++))
 do
-  INSTANCE_NAME=frontend-app-instance-$i
+  INSTANCE_NAME=frontend-app-instance-$BIND_PORT
   echo "$INSTANCE_NAME:$BIND_PORT - BUILD: $BUILD_NUMBER"
 
   # RAW: This is the "plain" regular launch of a container - nothing specific to Dynatrace OneAgent
