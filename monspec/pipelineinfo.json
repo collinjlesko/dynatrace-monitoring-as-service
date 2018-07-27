@@ -1,0 +1,5 @@
+{
+    "displayName" : "MaaSLabPipeline",
+    "tags" : ["Environment=MaaSLab"],
+    "properties" : {"Project" : "MaaSLab"}
+}
