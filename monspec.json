@@ -1,0 +1,75 @@
+{
+    "MaaSHost" : {
+        "etype" : "HOST",
+        "name" : "MaaS Host for Monitoring as a Service Tutorial",
+        "owner" : "I am the owner",
+        "environments" : {
+            "Lab2" : {
+                "tags" : [
+                    {
+                        "context" : "Environment",
+                        "key" : "MaaSHost"
+                    }
+                ]
+            }
+        },
+        "perfsignature" : [
+            {
+                "timeseries" : "com.dynatrace.builtin:host.cpu.user",
+                "aggregate" : "avg"
+            },
+            {
+                "timeseries": "com.dynatrace.builtin:host.mem.availablepercentage",
+                "aggregate" : "avg"
+            }
+        ]
+    },
+    "FrontendApp" : {
+        "etype" : "SERVICE",
+        "name" : "My Frontend App",
+        "owner" : "I am the owner",
+        "environments" : {
+            "Dev" : {
+                "tags" : [
+                    {
+                        "context" : "CONTEXTLESS",
+                        "key" : "Environment",
+                        "value" : "Dev"
+                    }
+                ]
+            }
+        },
+        "perfsignature" : [
+            {
+                "timeseriers" : "com.dynatrace.builtin:service.responsetime",
+                "aggregate" : "avg"
+            },
+            { 
+                "timeseries" : "com.dynatrace.builtin:service.failurerate",
+                "aggregate" : "avg"
+            },
+            { 
+                "timeseries" : "com.dynatrace.builtin:service.requestspermin",
+                "aggregate" : "count",
+                "validate" : "lower"
+            },
+            {
+                "smartscape" : "toRelationships:calls",
+                "upperlimit" : "2",
+                "aggregate" : "count",
+                "validate" : "lower"
+            },
+            {
+                "smartscape" : "fromRelationships:runsOn",
+                "aggregate" : "count",
+                "lowerlimit" : "2",
+                "validate" : "lower"
+            },
+            {
+                "smartscape" : "fromRelationships:calls",
+                "aggregate" : "count",
+                "validate" : "lower"
+            }
+        ]
+    }
+}

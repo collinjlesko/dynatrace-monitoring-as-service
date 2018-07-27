@@ -1,4 +1,4 @@
-FROM java:8
+FROM openjdk:8-jdk-alpine
  
 RUN wget http://mirror.nbtelecom.com.br/apache/jmeter/binaries/apache-jmeter-4.0.tgz
 RUN tar -xvzf apache-jmeter-4.0.tgz

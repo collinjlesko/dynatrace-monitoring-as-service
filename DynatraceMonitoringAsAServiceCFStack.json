@@ -5,7 +5,7 @@
         "DownloadDTMaaSGitHubRepo": {
             "Description": "Step 0: Download dynatrace-monitoring-as-service GitHub repo (only works once public)",
             "Type": "String",
-            "Default": "no",
+            "Default": "yes",
             "AllowedValues": [
                 "yes",
                 "no"
@@ -32,17 +32,25 @@
         "DynatraceTenantURL": {
             "Description": "Your full Dynatrace Tenant URL. For SaaS it is e.g: https://<YOURTENANTID>.live.dynatrace.com. For Managed something like https://yourserver/e/abcdefgh-1234-5678-abcd-55a7265f572f",
             "Type": "String",
-            "AllowedPattern" : "https:\/\/.*"
+            "AllowedPattern" : "https:\/\/.*",
+            "Default": "https://<YOURTENENTID>.live.dynatrace.com"
         },
         "DynatraceAPIToken": {
             "Description": "Your Dynatrace API Token. If you dont have one create one first in your Dynatrace Web UI via Settings -> Integration -> Dynatrace API",
             "Type": "String",
-            "MinLength" : "21"
+            "MinLength" : "21",
+            "Default" : "ABCDEFGHIJKLMNOPQRSTU"
         },
         "DynatraceOneAgentURL": {
             "Description": "Full Download Script URL. Go to Deploy Dynatrace -> Start Installation -> Linux and copy JUST the URL in the wget command and PASTE it here",
             "Type": "String",
-            "AllowedPattern" : "https:\/\/.*"
+            "AllowedPattern" : "https:\/\/.*",
+            "Default": "https://<YOURTENENTID>.live.dynatrace.com/api/v1/deployment/XXXXXXXXXXXXXXXXXXXXXXXXX"
+        },
+        "DynatraceCustomHostTags" : {
+            "Description": "Allows you to specify any number of tags that will be added to the hostautotag.conf file during installation, e.g: MyTag MyEnv=Staging",
+            "Type": "String",
+            "Default" : "MyCustomHostTag CreatedBy=TeamDev1"
         },
         "KeyName": {
             "Description": "Name of Existing EC2 Key Pair which we will use to launch new EC2 Instances",
@@ -54,7 +62,7 @@
         "InstanceType": {
             "Description": "Instance Types for the EC2 Instance we create",
             "Type": "String",
-            "Default": "t2.micro",
+            "Default": "t2.small",
             "AllowedValues": [
                 "t2.micro",
                 "t2.small",
@@ -71,7 +79,7 @@
                 },
                 {
                     "Label": { "default": "Dynatrace"},
-                    "Parameters": [ "DynatraceTenantURL", "DynatraceAPIToken", "DynatraceOneAgentURL" ]
+                    "Parameters": [ "DynatraceTenantURL", "DynatraceAPIToken", "DynatraceOneAgentURL", "DynatraceCustomHostTags" ]
                 },
                 {
                     "Label": {"default": "Deployment"},
@@ -305,6 +313,10 @@
                                                     {
                                                         "Ref" : "AWS::StackName"
                                                     },
+                                                    " ",
+                                                    {
+                                                        "Ref" : "DynatraceCustomHostTags"
+                                                    },
                                                     "\" > hostautotag.conf\n",
                                                     "cd /\n",
                                                     "sudo /bin/sh Dynatrace-OneAgent-Linux.sh APP_LOG_CONTENT_ACCESS=1\n"
@@ -316,7 +328,6 @@
                                 "\n",
                                 
                                 "# Second: We install required components such as docker, git ...\n",
-                                "yum install -y httpd\n",
                                 "yum install -y docker\n",
                                 "service docker start\n",
                                 "yum install -y git\n",
