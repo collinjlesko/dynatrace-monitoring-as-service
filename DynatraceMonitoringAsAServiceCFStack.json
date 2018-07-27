@@ -343,16 +343,7 @@
                                                     "cd /home/ec2-user\n",
                                                     "git clone https://github.com/Dynatrace/dynatrace-cli.git\n",
                                                     "cd dynatrace-cli\n",
-                                                    "docker build -t dynatrace-cli .\n",
-                                                    "echo \"{'apitoken' : '",
-                                                    {
-                                                        "Ref" : "DynatraceAPIToken"
-                                                    },
-                                                    "', 'tenanthost' : '",
-                                                    {
-                                                        "Ref" : "DynatraceTenantURL"
-                                                    },
-                                                    "}\" > dtconfig.json\n"
+                                                    "bash ./docker_build.sh\n"
                                                 ]
                                             ]
                                         },
@@ -370,7 +361,16 @@
                                                     "cd /home/ec2-user\n",
                                                     "git clone https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git\n",
                                                     "cd dynatrace-monitoring-as-service\n",
-                                                    "bash ./build.sh\n"
+                                                    "bash ./build.sh\n",
+                                                    "echo \"{'apitoken' : '",
+                                                    {
+                                                        "Ref" : "DynatraceAPIToken"
+                                                    },
+                                                    "', 'tenanthost' : '",
+                                                    {
+                                                        "Ref" : "DynatraceTenantURL"
+                                                    },
+                                                    "}\" > dtconfig.json\n"    
                                                 ]
                                             ]
                                         },
