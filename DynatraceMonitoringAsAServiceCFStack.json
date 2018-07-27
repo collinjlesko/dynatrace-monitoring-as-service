@@ -341,7 +341,7 @@
                                                 "",
                                                 [
                                                     "cd /home/ec2-user\n",
-                                                    "git clone https://github.com/Dynatrace/dynatrace-cli.git\n",
+                                                    "sudo runuser -l ec2-user -c 'git clone https://github.com/Dynatrace/dynatrace-cli.git'\n",
                                                     "cd dynatrace-cli\n",
                                                     "bash ./docker_build.sh\n"
                                                 ]
@@ -359,10 +359,10 @@
                                             ["",
                                                 [
                                                     "cd /home/ec2-user\n",
-                                                    "git clone https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git\n",
+                                                    "sudo runuser -l ec2-user -c 'git clone https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git\n'",
                                                     "cd dynatrace-monitoring-as-service\n",
                                                     "bash ./build.sh\n",
-                                                    "echo \"{'apitoken' : '",
+                                                    "sudo runuser -l ec2-user -c 'echo \"{'apitoken' : '",
                                                     {
                                                         "Ref" : "DynatraceAPIToken"
                                                     },
@@ -370,7 +370,7 @@
                                                     {
                                                         "Ref" : "DynatraceTenantURL"
                                                     },
-                                                    "}\" > dtconfig.json\n"    
+                                                    "}\" > dtconfig.json'\n"    
                                                 ]
                                             ]
                                         },

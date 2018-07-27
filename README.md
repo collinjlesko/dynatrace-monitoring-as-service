@@ -74,7 +74,7 @@ In this lab we learn how to automate the installation of the Dynatrace OneAgent,
 We have a JMeter script ready that executes constant load against the app. Here are the steps to kick it off:
 1. cd jmeter-as-container
 2. ./build_docker.sh
-3. ./quicklaunch.sh
+3. ./quicklaunch.sh <YOURPUBLICDNS, e.g: http://ec2-11-222-33-44.compute-1.amazonaws.com>
 
 This executes the script scripts/SampleNodeJsServiceTest.jmx. It simulates 10 concurrent users and the test will run until you call "./stop.test.sh". Once stopped you get the JMeter Result Dashboard in the local results.zip!
 
@@ -106,9 +106,15 @@ Lets first look at the script so you can replicate this in your own scripts (Clo
 "sudo /bin/sh Dynatrace-OneAgent-Linux.sh APP_LOG_CONTENT_ACCESS=1\n"
 ```
 
-This will result in an automated monitored host that should look simliar to this:
-![]()
+This will result in an automated monitored host that should look simliar to this - including all tags from hostautotag.conf and all AWS Tags that came in through the AWS CloudWatch Integration:
+![](./images/lab2_hostoverview_w_tags.jpg)
 
+*How were the individual processes detected? How about Process Groups?*
+By default Dynatrace groups similiar processes into a Process Group. In our case we will get a Process Group (PG) for each individual Docker Image, e.g: frontend-app, backend-app, frontend-loadbalancer.
+For each host where we have one or more instances of the same process or container running we will get one Process Group Instance (PGI). In our case that means that we will see one PGI for frontend-app, one for backend-app and one for frontend-loadbalancer.
+The fact that we have multiple instances of the same container on the same host doesnt give us individual PGIs. That is the default behavior!
+
+![](./images/lab2_hostoverview_processes.jpg)
 
 
 ## Lab 3: Pass Meta-Data for each deployed process or container
