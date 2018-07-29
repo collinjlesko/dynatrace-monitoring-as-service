@@ -370,7 +370,7 @@
                                                     {
                                                         "Ref" : "DynatraceTenantURL"
                                                     },
-                                                    "\\\"}\" > dtconfig.json'\n"    
+                                                    "\\\"}\" > ./dynatrace-monitoring-as-service/dtconfig.json'\n"    
                                                 ]
                                             ]
                                         },

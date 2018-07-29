@@ -76,7 +76,7 @@ In this lab we learn how to automate the installation of the Dynatrace OneAgent,
 We have a JMeter script ready that executes constant load against the app. Here are the steps to kick it off:
 1. cd jmeter-as-container
 2. ./build_docker.sh
-3. ./quicklaunch.sh <YOURPUBLICDNS, e.g: http://ec2-11-222-33-44.compute-1.amazonaws.com>
+3. ./quicklaunch.sh <YOURPUBLICDNS, e.g: ./quicklaunch.sh ec2-11-222-33-44.compute-1.amazonaws.com
 
 This executes the script scripts/SampleNodeJsServiceTest.jmx. It simulates 10 concurrent users and the test will run until you call "./stop.test.sh". Once stopped you get the JMeter Result Dashboard in the local results.zip!
 
@@ -205,6 +205,8 @@ The Dynatrace CLI also implements a dtcli evt push option as well as an option t
 3. Execute ./pushservicedeploy.sh
 4. Open the service details view for your FrontendApp service
 
+![](./images/pushserviceevent.jpg)
+
 ## Lab 6: Management Zones: Provide Access Control to data based on Meta-Data
 
 ## Lab 7: Automatically query key metrics important for YOU!
@@ -212,3 +214,6 @@ The Dynatrace CLI also implements a dtcli evt push option as well as an option t
 ## Lab 8: Run stack for second environment and validation automation
 Now as we have everything correctly setup and configured for our first environment lets do the same thing for a second enviornment:
 1. Create a second
+
+## Lab 9: Setup Notification Integration
+The last lab is about setting up your problem notification integration with your ChatOps or other incident management tools. 
