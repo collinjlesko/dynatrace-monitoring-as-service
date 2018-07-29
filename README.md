@@ -110,21 +110,82 @@ This will result in an automated monitored host that should look simliar to this
 ![](./images/lab2_hostoverview_w_tags.jpg)
 
 *How were the individual processes detected? How about Process Groups?*
-By default Dynatrace groups similiar processes into a Process Group. In our case we will get a Process Group (PG) for each individual Docker Image, e.g: frontend-app, backend-app, frontend-loadbalancer.
-For each host where we have one or more instances of the same process or container running we will get one Process Group Instance (PGI). In our case that means that we will see one PGI for frontend-app, one for backend-app and one for frontend-loadbalancer.
-The fact that we have multiple instances of the same container on the same host doesnt give us individual PGIs. That is the default behavior!
+By default Dynatrace groups similiar processes into a [Process Group](https://www.dynatrace.com/support/help/infrastructure/processes/what-are-processes-groups/). In our case we will get a Process Group (PG) for each individual Docker Image, e.g: frontend-app, backend-app, frontend-loadbalancer as this is the default behavior!
 
 ![](./images/lab2_hostoverview_processes.jpg)
 
+If we run multiple process or docker instances of the same process or container image, Dynatrace will group them all into a single Process Group Instance (PGI). In our case that means that we will see ONE PGI for frontend-app, ONE for backend-app and ONE for frontend-loadbalancer.
+The fact that we have multiple instances of the same container on the same host doesnt give us individual PGIs. That is the default behavior! We have ways to change that behavior through Process Group Detection rules or by using some of the DT_ environment variables. We will use this later one to get different PGIs for the different simulated builds of our frontend service, e.g: PGI for Build 1, Build 2, ... - for now we go with the default!
 
-## Lab 3: Pass Meta-Data for each deployed process or container
+**Lab Lessons Learned**
+1. Deploying OneAgent will automatically enable FullStack Monitoring
+2. hostautotag.conf will automatically push custom tags to the host entity
+3. Process Group (PG) and Process Group Instance (PGI) are automatically detected for each docker image
 
-## Lab 4: Pass Deployment & Configuration Change Events to Dynatrace
+## Lab 3: Pass and Extract Meta-Data for each deployed Process or Container
+In this lab we learn how which meta-data is captured automatically, how to pass custom meta data and how we can use this meta data to influence process group detection and automated tagging!
 
-## Lab 5: Management Zones: Provide Access Control to data based on Meta-Data
+The OneAgent automatically captures a lot of meta data for each process which will be propagated to the Process Group Instance and the Process Group itself, e.g: Technology, JVM Version, Docker Image, Kubernetes pod names, service version number, ...
 
-## Lab 6: Automatically query key metrics important for YOU!
+*Add custom meta data:* We can add additional meta data to every processes [via the environment variable DT_CUSTOM_PROP, DT_TAGS, ...](https://www.dynatrace.com/support/help/infrastructure/processes/how-do-i-define-my-own-process-group-metadata/)
 
-## Lab 7: Run stack for second environment and validation automation
+*Which additional meta data should we pass?*
+It depends on your environment but here are some ideas, e.g: Build Number, Version Number, Team Ownership, Type of Service, ...
+
+*Using Meta Data (How and Use Cases):* We can use custom and existing meta data from, e.g: Java Properties, Environment Variables or Process Properties to influence [Process Group Detection](https://www.dynatrace.com/support/help/infrastructure/processes/can-i-customize-how-process-groups-are-detected/) as well as [Rule-based Tagging](https://www.dynatrace.com/news/blog/automated-rule-based-tagging-for-services/)!
+
+**Step 1: Pass meta data via custom environment variables**
+1. Edit frontend-app/run_docker.sh
+2. Change the comments to use the launch process labeled **Step 1** (make sure the other lines are commented)
+3. Lets restart our app via ../stop_frontend_clustered.sh and then ../run_frontend2builds_clustered.sh
+
+Looking at our Process Groups now shows us the additional Meta Data and the Automated Tags!
+
+MISSING IMAGE OF PROCESS GROUP W TAGS!!!
+
+**Step 2: Influence PGI Detection to detect each Build as separate PGI**
+1. Edit frontend-app/run_docker.sh
+2. Change the comments to use the launch process labeled **Step 2** (make sure the other lines are commented)
+3. Lets restart our app via ../stop_frontend_clustered.sh and then ../run_frontend2builds_clustered.sh
+
+The difference with this launch process is that we pass the BUILD_NUMBER as DT_NODE_ID. This changes the default Process Group Instance detection mechanism and every docker instance, even if it comes from the same docker image, will be split into its own PGI.
+**Note: Kubernetes, OpenShift, CloudFoundry, ...:** For these platforms the OneAgent automatically detects containers running in different pods, spaces or projects. There should be no need to leverage DT_NODE_ID to separate your container instances.
+
+MISSING IMAGE OF PGIS PER BUILD!
+
+## Lab 4: Tagging of Services
+In this lab we learn how to automatically apply tags on service level. This allows you to query service-level metrics (Respone Time, Failure Rate, Throughput, ...) automatically based on meta data that you have passed during a deployment, e.g: Service-Type (Frontend, Backend, ...), Deployment Stage (Dev, Test, Staging, Prod ...)
+
+In order to tag services we leverage Automated Service Tag Rules. In our lab we want Dynatrace create a new Service-level TAG with the name "Service_Type". It should only tag it if the underlying Process Group has the custom meta data property "SERVICE_TYPE". If that is the case we also want to take that value and apply it as the tag value for "Service_Type". 
+
+**Step 1: Create Service tag rule**
+1. Go to Settings -> Tags -> Automatically applied tags
+2. Create a new Tag with the name "ServiceType"
+3. Edit that tag and create a new rule
+3.1. Rule applies to Services
+3.2. Optional tag value: {ProcessGroup:Environment:SERVICE_TYPE}
+3.3. Condition on "Process group properties -> SERVICE_TYPE" if "exists" 
+4. Click on Preview to validate rule works
+5. Click on Save for the rule and then "Done"
+
+**Step 2: Search for Services with Tag**
+It will take about 30s until the tags are automatically applied to the services. So - lets test it
+1. Go to Transaction & services
+2. Click in "Filtered by" edit field
+3. Select "ServiceType" and select "Frontend"
+4. You should see your service!
+
+## Lab 5: Pass Deployment & Configuration Change Events to Dynatrace
+Passing meta data is one way to enrich the meta data in Smartscape and the automated PG, PGI and Service detection and tagging. Additionally to meta data we can also push deployment and configuration changes events to these Dynatrace Entities.
+
+**Step 1: Push host deployment information**
+
+**Step 2: Push service deployment information**
+
+## Lab 6: Management Zones: Provide Access Control to data based on Meta-Data
+
+## Lab 7: Automatically query key metrics important for YOU!
+
+## Lab 8: Run stack for second environment and validation automation
 Now as we have everything correctly setup and configured for our first environment lets do the same thing for a second enviornment:
 1. Create a second

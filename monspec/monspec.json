@@ -33,7 +33,12 @@
                 "tags" : [
                     {
                         "context" : "CONTEXTLESS",
-                        "key" : "Environment",
+                        "key" : "SERVICE_TYPE",
+                        "value" : "FRONTEND"
+                    },
+                    {
+                        "context" : "CONTEXTLESS",
+                        "key": "Environment",
                         "value" : "Dev"
                     }
                 ]

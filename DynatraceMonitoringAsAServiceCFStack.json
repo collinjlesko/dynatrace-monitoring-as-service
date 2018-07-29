@@ -50,7 +50,7 @@
         "DynatraceCustomHostTags" : {
             "Description": "Allows you to specify any number of tags that will be added to the hostautotag.conf file during installation, e.g: MyTag MyEnv=Staging",
             "Type": "String",
-            "Default" : "MyCustomHostTag CreatedBy=TeamDev1"
+            "Default" : "MyCustomHostTag CreatedBy=TeamDev1 Environment=Dev"
         },
         "KeyName": {
             "Description": "Name of Existing EC2 Key Pair which we will use to launch new EC2 Instances",

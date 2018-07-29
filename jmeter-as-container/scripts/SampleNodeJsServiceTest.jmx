@@ -9,7 +9,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="SERVERIP" elementType="Argument">
             <stringProp name="Argument.name">SERVERIP</stringProp>
-            <stringProp name="Argument.value">http://172.17.0.1:80</stringProp>
+            <stringProp name="Argument.value">127.0.0.1</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="INVOKE_URL_1" elementType="Argument">
@@ -61,7 +61,8 @@ import java.io;
 import java.util;
 
 // -------------------------------------------------------------------------------------
-// Will set the x-dynatrace-test Header.
+// Generate the x-dynatrace-test header based on this best practic
+// -&gt; https://www.dynatrace.com/support/help/integrations/test-automation-frameworks/how-do-i-integrate-dynatrace-into-my-load-testing-process/
 // -------------------------------------------------------------------------------------
 String SN = (bsh.args.length &gt; 0) ? bsh.args[0] : &quot;Test Scenario&quot;;
 String TSN = sampler.getName();
@@ -69,7 +70,8 @@ String VU = ctx.getThreadGroup().getName() + ctx.getThreadNum();
 String headerValue = &quot;SN=&quot;+ SN + &quot;;TSN=&quot; + TSN + &quot;;VU=&quot; + VU + &quot;;&quot;;
 
 // -------------------------------------------
-// log it out &amp; set header
+// Set header
+// -------------------------------------------
 HeaderManager hm = sampler.getHeaderManager();
 hm.removeHeaderNamed(&quot;x-dynatrace-test&quot;);
 hm.add(new org.apache.jmeter.protocol.http.control.Header(&quot;x-dynatrace-test&quot;, headerValue));</stringProp>
@@ -164,6 +166,39 @@ hm.add(new org.apache.jmeter.protocol.http.control.Header(&quot;x-dynatrace-test
         </hashTree>
       </hashTree>
       <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
