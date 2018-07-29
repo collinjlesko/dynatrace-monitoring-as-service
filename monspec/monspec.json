@@ -35,11 +35,6 @@
                         "context" : "CONTEXTLESS",
                         "key" : "SERVICE_TYPE",
                         "value" : "FRONTEND"
-                    },
-                    {
-                        "context" : "CONTEXTLESS",
-                        "key": "Environment",
-                        "value" : "Dev"
                     }
                 ]
             }

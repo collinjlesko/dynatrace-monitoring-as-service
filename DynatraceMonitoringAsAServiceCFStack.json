@@ -359,18 +359,18 @@
                                             ["",
                                                 [
                                                     "cd /home/ec2-user\n",
-                                                    "sudo runuser -l ec2-user -c 'git clone https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git\n'",
+                                                    "sudo runuser -l ec2-user -c 'git clone https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git'\n",
                                                     "cd dynatrace-monitoring-as-service\n",
                                                     "bash ./build.sh\n",
-                                                    "sudo runuser -l ec2-user -c 'echo \"{'apitoken' : '",
+                                                    "sudo runuser -l ec2-user -c 'echo \"{\\\"cacheupdate\\\" : \\\"5\\\", \\\"apitoken\\\" : \\\"",
                                                     {
                                                         "Ref" : "DynatraceAPIToken"
                                                     },
-                                                    "', 'tenanthost' : '",
+                                                    "\\\", \\\"tenanthost\\\" : \\\"",
                                                     {
                                                         "Ref" : "DynatraceTenantURL"
                                                     },
-                                                    "}\" > dtconfig.json'\n"    
+                                                    "\\\"}\" > dtconfig.json'\n"    
                                                 ]
                                             ]
                                         },

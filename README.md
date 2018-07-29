@@ -1,3 +1,5 @@
+**DISCLAIMER:** This tutorial is currently under development by the Dynatrace Innovation Lab! If you have any questions please get in contact with me (@grabnerandi)!
+
 # Dynatrace Monitoring as a Service Tutorial
 Goal: Update your current "Deployment Automation" to automatically rollout Dynatrace Fullstack monitoring across your infrastructure. Every host, app and service that gets deployed will automatically - without any additional configuration - deliver key metrics for the individual stakeholders: dev, architects, operations and business
 
@@ -141,7 +143,7 @@ It depends on your environment but here are some ideas, e.g: Build Number, Versi
 
 Looking at our Process Groups now shows us the additional Meta Data and the Automated Tags!
 
-MISSING IMAGE OF PROCESS GROUP W TAGS!!!
+![](./images/lab3_processgroup_wtag_metadata.jpg)
 
 **Step 2: Influence PGI Detection to detect each Build as separate PGI**
 1. Edit frontend-app/run_docker.sh
@@ -151,16 +153,16 @@ MISSING IMAGE OF PROCESS GROUP W TAGS!!!
 The difference with this launch process is that we pass the BUILD_NUMBER as DT_NODE_ID. This changes the default Process Group Instance detection mechanism and every docker instance, even if it comes from the same docker image, will be split into its own PGI.
 **Note: Kubernetes, OpenShift, CloudFoundry, ...:** For these platforms the OneAgent automatically detects containers running in different pods, spaces or projects. There should be no need to leverage DT_NODE_ID to separate your container instances.
 
-MISSING IMAGE OF PGIS PER BUILD!
+![](./images/lab3_pgis_per_build.jpg)
 
 ## Lab 4: Tagging of Services
 In this lab we learn how to automatically apply tags on service level. This allows you to query service-level metrics (Respone Time, Failure Rate, Throughput, ...) automatically based on meta data that you have passed during a deployment, e.g: Service-Type (Frontend, Backend, ...), Deployment Stage (Dev, Test, Staging, Prod ...)
 
-In order to tag services we leverage Automated Service Tag Rules. In our lab we want Dynatrace create a new Service-level TAG with the name "Service_Type". It should only tag it if the underlying Process Group has the custom meta data property "SERVICE_TYPE". If that is the case we also want to take that value and apply it as the tag value for "Service_Type". 
+In order to tag services we leverage Automated Service Tag Rules. In our lab we want Dynatrace create a new Service-level TAG with the name "SERVICE_TYPE". It should only apply the tag IF the underlying Process Group has the custom meta data property "SERVICE_TYPE". If that is the case we also want to take that value and apply it as the tag value for "Service_Type". 
 
 **Step 1: Create Service tag rule**
 1. Go to Settings -> Tags -> Automatically applied tags
-2. Create a new Tag with the name "ServiceType"
+2. Create a new Tag with the name "SERVICE_TYPE"
 3. Edit that tag and create a new rule
 3.1. Rule applies to Services
 3.2. Optional tag value: {ProcessGroup:Environment:SERVICE_TYPE}
@@ -168,19 +170,40 @@ In order to tag services we leverage Automated Service Tag Rules. In our lab we 
 4. Click on Preview to validate rule works
 5. Click on Save for the rule and then "Done"
 
+Here is the screenshot that shows that rule definition!
+![](./images/lab4_define_servicetagrule.jpg)
+
 **Step 2: Search for Services with Tag**
 It will take about 30s until the tags are automatically applied to the services. So - lets test it
 1. Go to Transaction & services
 2. Click in "Filtered by" edit field
 3. Select "ServiceType" and select "Frontend"
-4. You should see your service!
+4. You should see your service! Open it up!
+
+![](./images/lab4_serviceview_with_servicetypetag.jpg)
 
 ## Lab 5: Pass Deployment & Configuration Change Events to Dynatrace
 Passing meta data is one way to enrich the meta data in Smartscape and the automated PG, PGI and Service detection and tagging. Additionally to meta data we can also push deployment and configuration changes events to these Dynatrace Entities.
 
+The Dynatrace Event API provides a way to either push a Custom Annotation or a Custom Deployment Event to a list of entities or entities that match certain tags. More on the [Dynatrace Event API can be found here](https://www.dynatrace.com/support/help/dynatrace-api/events/how-do-i-push-events-from-3rd-party-systems/).
+
+The Dynatrace CLI also implements a dtcli evt push option as well as an option that is part of "Monitoring as Code" (Monspec). This is what we are going to use in our lab. We already have a pre-configured monspec.json file available that contains the definition of how our host can be identified in Dynatrace.
+
 **Step 1: Push host deployment information**
+1. cat ./monspec/monspec.json
+2. Explore the entry "MaaSHost". You will see that it contains sub elements that define how to detect that host in Dynatrace in our Lab2
+3. Execute ./pushhostdeploy.sh
+4. Open the host details view in Dynatrace and check the events view
+
+![](./images/pushhostevent.jpg)
+
+*What just happened?* The Dynatrace CLI was called with the monspec and the pipelineinfo.json as parameter. One additional parameter was MaaSHost/Lab2. This told the CLI to lookup this configuration section in monspec.json and then push a custom deployment event to those Dynatrace HOST entities that have that particular tag (Environment=MaaSHost) on it. Such an event in Dynatrace can have an arbritrary list of name/value pair properties. The CLI automatically pushes some of the information from monspec, e.g: Owner as well as some information in the pipelineinfo.json file to Dynatrace!
 
 **Step 2: Push service deployment information**
+1. cat ./monspec/monspec.json
+2. Explore the entry "FrontendApp". You will see similiar data as for our host. But now its a SERVICE and we use our SERVICE_TYPE tag to identify it
+3. Execute ./pushservicedeploy.sh
+4. Open the service details view for your FrontendApp service
 
 ## Lab 6: Management Zones: Provide Access Control to data based on Meta-Data
 
