@@ -29,11 +29,13 @@ To walk through all labs of this tutorial you will need
 4. In AWS you need an EC2 KeyPair in your default region
 5. In Dynatrace you need to create an [API Token](https://www.dynatrace.com/support/help/dynatrace-api/authentication/how-do-i-set-up-authentication-to-use-the-api/)
 6. In Dynatrace setup [AWS CloudWatch Monitoring](https://www.dynatrace.com/support/help/cloud-platforms/amazon-web-services/how-do-i-start-amazon-web-services-monitoring/)
+7. Import https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git into your own GitHub account if you want to walk through Labs 4 and beyond! These require some code modifications that we will commit back to GitHub
 
-**Best Practice:** For most of the labs we need to provide the following three input values:
+**Best Practice:** For most of the labs we need to provide the following input values:
 1. Dynatrace SaaS Url
 2. Dynatrace OneAgent Download URL
 3. Dynatrace API Token
+4. Your GitHub Repo link!
 Make sure you have these values at hand, e.g: copy them into a text file so they are easily accessible
 
 ## Lab #1: Install our apps without any monitoring
@@ -44,8 +46,9 @@ Make sure you have these values at hand, e.g: copy them into a text file so they
 2. Make sure you have an AWS EC2 KeyPair
 3. Go to [CloudFormation Stack](https://console.aws.amazon.com/cloudformation/home) and create a new stack with the name "DTMaaSLab1" by uploading [DynatraceMonitoringAsAServiceCFStack.json](../blob/master/DynatraceMonitoringAsAServiceCFStack.json)
 4. Select "Yes" on "Step 0: Download dynatrace-monitoring-as-service Github" (keep the rest NO)
-5. Fill in the 3 Dynatrace values even though not needed for this workshop
-6. Walk until the end of the wizard - make sure to select "I acknolwedge ..." on the last step before creating the stack!
+5. If you have created your own GitHub repo then provide the link - otherwise go with the default
+6. Fill in the 3 Dynatrace values even though not needed for this workshop
+7. Walk until the end of the wizard - make sure to select "I acknolwedge ..." on the last step before creating the stack!
 
 **Step 2: Launch app**
 1. SSH into machine
@@ -67,6 +70,7 @@ In this lab we learn how to automate the installation of the Dynatrace OneAgent,
 1. Either keep or delete the old stack from Lab 1
 2. Create a new stack based on the same CF Template and call it "DTMaaSLab2"
 3. Select YES to install OneAgent and Dynatrace CLI
+4. Keep the rest the same as before
 
 **Step 2: Launch app: Just as in Lab1**
 
@@ -213,7 +217,7 @@ The Dynatrace CLI also implements a dtcli evt push option as well as an option t
 
 ## Lab 8: Run stack for second environment and validation automation
 Now as we have everything correctly setup and configured for our first environment lets do the same thing for a second enviornment:
-1. Create a second
+
 
 ## Lab 9: Setup Notification Integration
 The last lab is about setting up your problem notification integration with your ChatOps or other incident management tools. 

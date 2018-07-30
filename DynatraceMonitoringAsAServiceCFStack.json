@@ -2,6 +2,11 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Dynatrace ACM Monitoring as a Service Workshop: https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service",
     "Parameters": {
+        "TutorialGitHubLink" : {
+            "Description" : "The link to your cloned version of https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git",
+            "Type" : "String", 
+            "Default" : "https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git"
+        },
         "DownloadDTMaaSGitHubRepo": {
             "Description": "Step 0: Download dynatrace-monitoring-as-service GitHub repo (only works once public)",
             "Type": "String",
@@ -75,7 +80,7 @@
             "ParameterGroups": [
                 {
                     "Label": { "default": "Workshop Automation Steps"},
-                    "Parameters": [ "DownloadDTMaaSGitHubRepo", "UseDynatraceOneAgent", "InstallDynatraceCLI" ]
+                    "Parameters": [ "DownloadDTMaaSGitHubRepo", "TutorialGitHubLink", "UseDynatraceOneAgent", "InstallDynatraceCLI" ]
                 },
                 {
                     "Label": { "default": "Dynatrace"},
@@ -359,7 +364,11 @@
                                             ["",
                                                 [
                                                     "cd /home/ec2-user\n",
-                                                    "sudo runuser -l ec2-user -c 'git clone https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git'\n",
+                                                    "sudo runuser -l ec2-user -c 'git clone ",
+                                                    {
+                                                        "Ref" : "TutorialGitHubLink"
+                                                    },
+                                                    " dynatrace-monitoring-as-service.git'\n",
                                                     "cd dynatrace-monitoring-as-service\n",
                                                     "bash ./build.sh\n",
                                                     "sudo runuser -l ec2-user -c 'echo \"{\\\"cacheupdate\\\" : \\\"5\\\", \\\"apitoken\\\" : \\\"",
