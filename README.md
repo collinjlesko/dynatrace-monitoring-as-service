@@ -65,6 +65,7 @@ As for  monitoring: The only level of monitoring you have in the moment is throu
 
 ## Lab 2: Enable FullStack Monitoring throuhg OneAgent rollout
 In this lab we learn how to automate the installation of the Dynatrace OneAgent, how to pass in additional meta data about the host and how OneAgent automatically monitors all our processes, containers, services, applications and end-users!
+We also learn about tagging and how to organize your entities. We highly recommend to read [Best practices on organize monitored entities](https://www.dynatrace.com/support/help/organize-monitored-entities/)
 
 **Step 1: Create stack**
 1. Either keep or delete the old stack from Lab 1
@@ -80,7 +81,7 @@ In this lab we learn how to automate the installation of the Dynatrace OneAgent,
 We have a JMeter script ready that executes constant load against the app. Here are the steps to kick it off:
 1. cd jmeter-as-container
 2. ./build_docker.sh
-3. ./quicklaunch.sh <YOURPUBLICDNS, e.g: ./quicklaunch.sh ec2-11-222-33-44.compute-1.amazonaws.com
+3. ./quicklaunch.sh <YOURPUBLICDNS>, e.g: ./quicklaunch.sh ec2-11-222-33-44.compute-1.amazonaws.com
 
 This executes the script scripts/SampleNodeJsServiceTest.jmx. It simulates 10 concurrent users and the test will run until you call "./stop.test.sh". Once stopped you get the JMeter Result Dashboard in the local results.zip!
 
