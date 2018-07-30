@@ -29,7 +29,7 @@ To walk through all labs of this tutorial you will need
 4. In AWS you need an EC2 KeyPair in your default region
 5. In Dynatrace you need to create an [API Token](https://www.dynatrace.com/support/help/dynatrace-api/authentication/how-do-i-set-up-authentication-to-use-the-api/)
 6. In Dynatrace setup [AWS CloudWatch Monitoring](https://www.dynatrace.com/support/help/cloud-platforms/amazon-web-services/how-do-i-start-amazon-web-services-monitoring/)
-7. Import https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git into your own GitHub proejct if you want to walk through Labs 3 and beyond! These require some code modifications that we will commit back to GitHub
+7. FORK or IMPORT https://github.com/dynatrace-innovationlab/dynatrace-monitoring-as-service.git into your own GitHub proejct if you want to walk through Labs 3 and beyond! These require some code modifications that we will commit back to GitHub
 
 **Best Practice:** For most of the labs we need to provide the following input values:
 1. Dynatrace SaaS Url
