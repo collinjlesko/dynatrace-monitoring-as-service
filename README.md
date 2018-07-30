@@ -59,6 +59,14 @@ This will run one instance of the backend-service, 4 instances of the frontend-s
 **Step 3: Browse the app**
 1. Open your browser and navigate to the public IP or DNS of your EC2 machine. You should see the web interface and can interact with its services!
 
+**Step 4: Learn how to redeploy app**
+1. ./stop_frontend_clustered.sh will STOP ALL components (load balancer, frontend & backend)
+2. ./stop_docker.sh in subdirectories allow for stopping all tiers independantly.
+3. ./frontend-app/run_docker.sh allows for launching a specific build with certain instance count and bind port
+4. ./frontend-loadbalancer/run_docker.sh allows to launch nginx for a number of available frontend-app instances
+
+Before launching frontend, backend or frontend-loadbalancer have a look at the run_docker.sh files for usage information!
+
 **Summary: What we have!**
 We have a distributed application that we can access. 
 As for  monitoring: The only level of monitoring you have in the moment is through the Dynatrace AWS CloudWatch integration which gives you basic infrastructure metrics for your EC2 instance!
@@ -224,8 +232,40 @@ The Dynatrace CLI also implements a dtcli evt push option as well as an option t
 2. Push deployment information to entities defined in monspec.json
 
 ## Lab 6: Management Zones: Provide Access Control to data based on Meta-Data
+[Management Zones](https://www.dynatrace.com/news/blog/grant-fine-grained-access-rights-using-management-zones-beta/) allow us to define who is going to see and who has access to what type of FullStack data. There are many ways to slice your environment - and it will depend on your organizational structure & processes.
+In our tutorial we can assume that we have the following teams
+* a Frontend and a Backend Team (responsible for any Node.js services)
+* a Dev Team responsible for the whole Development Environment
+* an Architecture Team responsible for Development & Staging
+* an Operations Team responsible for all Infrastructure (=all Hosts)
+* a Business Team responsible for all applications
 
+Lets create Management Zones that will give each team access to the data they are supposed to see!
 
+**Step 1: Create Management Zone for Frontend & Backend**
+1. Go to Settings -> Preferences -> Management Zones
+2. Create a Zone named "Frontend Services"
+3. Add a new rule for "Services"
+4. Define a condition for SERVICE_TYPE=FRONTEND
+5. Select "Apply to underlying process groups of matching services"
+6. Add a second rule for SERVICE_TYPE=BACKEND
+7. Save and test the Management Zone in the Smartscape View
+
+**Step 2: Create Management Zone for Dev Team**
+Create a Zone that shows ALL entities that are tagged with Environment=Development
+
+**Step 3: Create Management Zone for Architect Team**
+Create a Zone that shows ALL entities that are tagged with Environment=Development or Environment=Staging
+
+**Step 4: Create Management Zone for Operations**
+Create a Zone for all HOSTS & Processes.
+
+**Step 5: Create Management Zone for Business**
+Create a Zone that covers all Web Applications
+
+**Lab Lesson Learned**
+1. Management Zones allow us to create filter on all fullstack monitored data
+2. Management Zones can also be used for access control!
 
 ## Lab 7: Automatically query key metrics important for YOU!
 The Dynatrace REST API provides easy access to [Smartscape (=Topology Data)](https://www.dynatrace.com/support/help/dynatrace-api/topology-and-smartscape/what-does-the-topology-and-smartscape-api-provide/) as well as [Timeseries (=Performance Metrics)](https://www.dynatrace.com/support/help/dynatrace-api/timeseries/how-do-i-fetch-the-metrics-of-monitored-entities/). Basically everything we see in the Dynatrace UI can be queried and accessed via the API. This allows us to answer questions such as
@@ -262,6 +302,27 @@ Now as we have everything correctly setup and configured for our first environme
 4. For "DynatraceCustomHostProperties" specify "Environment=Staging"
 5. Lets create the stack and explore what we see in Dynatrace
 
+**Lab Lesson Learned**
+1. With all automation in place Dynatrace correctly tags all entities
+2. Dashboards and Management Zones work based on Infrastructure as Code Meta Data
 
 ## Lab 9: Setup Notification Integration
 The last lab is about setting up your problem notification integration with your ChatOps or other incident management tools. 
+
+## Lab 10: Setup Availability Checks
+Additionally to automated Real User Monitoring (RUM) where Dynatrace automatically alerts on problems impacting real user experience we can also setup specific synthetic tests to validate availability and performance for our key business transaction and service endpoints.
+
+**Step 1: Create Synthetic Monitor for Staging**
+1. Go to Synthetic
+2. Create a new Synthetic Test for our Staging Web Site
+3. Validate Synthetic Test is producing results
+4. Shutdown Staging Frontend-Loadbalancer to simulate an Availability Issue
+5. Create a Notification Integration that sends an alert to Business
+6. Restart Staging Frontend-Loadbalancer
+7. Simulate another issue and validate notification works!
+
+**Lab Lesson Learned**
+1. Dynatrace can alert Business on Availabilty or Performance Issues with key business transactions
+
+## Lab 11: Dashboarding
+Dynatrace provides rich dashboarding capabilities. As a last step we want to create default dashboards for development, business and operations.
