@@ -1,3 +1,3 @@
-FROM nginx:alpine
+FROM nginx:1.14-alpine
 RUN rm /etc/nginx/conf.d/default.conf
 COPY conf.d/default.conf /etc/nginx/conf.d/default.conf

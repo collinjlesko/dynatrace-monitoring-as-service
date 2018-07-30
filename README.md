@@ -159,6 +159,10 @@ The difference with this launch process is that we pass the BUILD_NUMBER as DT_N
 
 ![](./images/lab3_pgis_per_build.jpg)
 
+**Lab Lesson Learned**
+1. How to pass additional meta data to a process group
+2. How to influence process group and process group instance detection
+
 ## Lab 4: Tagging of Services
 In this lab we learn how to automatically apply tags on service level. This allows you to query service-level metrics (Respone Time, Failure Rate, Throughput, ...) automatically based on meta data that you have passed during a deployment, e.g: Service-Type (Frontend, Backend, ...), Deployment Stage (Dev, Test, Staging, Prod ...)
 
@@ -186,6 +190,9 @@ It will take about 30s until the tags are automatically applied to the services.
 
 ![](./images/lab4_serviceview_with_servicetypetag.jpg)
 
+**Lab Lesson Learned**
+1. Create automated tagging rules to apply tags to services
+
 ## Lab 5: Pass Deployment & Configuration Change Events to Dynatrace
 Passing meta data is one way to enrich the meta data in Smartscape and the automated PG, PGI and Service detection and tagging. Additionally to meta data we can also push deployment and configuration changes events to these Dynatrace Entities.
 
@@ -211,9 +218,38 @@ The Dynatrace CLI also implements a dtcli evt push option as well as an option t
 
 ![](./images/pushserviceevent.jpg)
 
+**Lab Lesson Learned**
+1. The concept of "Monitoring as Code" monspec.json file
+2. Push deployment information to entities defined in monspec.json
+
 ## Lab 6: Management Zones: Provide Access Control to data based on Meta-Data
 
+
+
 ## Lab 7: Automatically query key metrics important for YOU!
+The Dynatrace REST API provides easy access to [Smartscape (=Topology Data)](https://www.dynatrace.com/support/help/dynatrace-api/topology-and-smartscape/what-does-the-topology-and-smartscape-api-provide/) as well as [Timeseries (=Performance Metrics)](https://www.dynatrace.com/support/help/dynatrace-api/timeseries/how-do-i-fetch-the-metrics-of-monitored-entities/). Basically everything we see in the Dynatrace UI can be queried and accessed via the API. This allows us to answer questions such as
+- Whats the response time of my backend-service?
+- How many users access our application through the browser?
+- On how many PGIs does our fronent-app service run on?
+- How many service dependencies does our frontend-app have?
+
+*Monitoring as Code*
+To make querying of key metrics of certain entities and services easier we extend our "Monitoring as Code" (=monspec.json) with a list of key timeseries and smartscape metrics that we want to analyze. In monspec.json we can define these metrics in the "perfsignature" (Performance Signature) config element Our tutorial already has some of these metrics pre-defined for our host and frontend-app service.
+
+*Monspec in Dynatrace CLI*
+The Dynatrace CLI implements a couple of use cases to pull, compare or even pull & push data for one of our monitored entities in a specific environment. In this tutorial we have a helper shell script called pullmonspec.sh which we can use to pull all "perfsignature" metrics for a specific Entity in a certain Environment, e.g: MaaSHost/Lab2 would pull in all metrics defined for MaaSHost and will do it for the Host runs in Lab2 Environment!
+
+**Step 1: Explore perfsignature list in monspec.json**
+1. cat /monspec/monspec.json
+2. Explore the list of metrics and see how to define new ones
+
+**Step 2: Pull these metrics from Dynatrace via the Dynatrace-CLI**
+1. ./pullmonspec.sh MaaSHost/Lab2
+2. ./pullmonspec.sh FrontendApp/Dev
+
+**Lab Lesson Learned**
+1. How "Monitoring as Code" monspec.json allows us to define key performance & smartscape metrics (=Performance Signature)
+2. Pull the Performance Signature metrics in an automated way
 
 ## Lab 8: Run stack for second environment and validation automation
 Now as we have everything correctly setup and configured for our first environment lets do the same thing for a second enviornment:
