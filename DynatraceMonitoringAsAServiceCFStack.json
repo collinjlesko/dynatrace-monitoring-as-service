@@ -368,7 +368,7 @@
                                                     {
                                                         "Ref" : "TutorialGitHubLink"
                                                     },
-                                                    " dynatrace-monitoring-as-service.git'\n",
+                                                    " dynatrace-monitoring-as-service'\n",
                                                     "cd dynatrace-monitoring-as-service\n",
                                                     "bash ./build.sh\n",
                                                     "sudo runuser -l ec2-user -c 'echo \"{\\\"cacheupdate\\\" : \\\"5\\\", \\\"apitoken\\\" : \\\"",

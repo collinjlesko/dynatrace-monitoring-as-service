@@ -9,7 +9,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="SERVERIP" elementType="Argument">
             <stringProp name="Argument.name">SERVERIP</stringProp>
-            <stringProp name="Argument.value">127.0.0.1</stringProp>
+            <stringProp name="Argument.value">www.orf.at</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="INVOKE_URL_1" elementType="Argument">
@@ -20,6 +20,11 @@
           <elementProp name="INVOKE_URL_2" elementType="Argument">
             <stringProp name="Argument.name">INVOKE_URL_2</stringProp>
             <stringProp name="Argument.value">http://172.17.0.1:9000/api/quoteoftheday</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="DT_LTN" elementType="Argument">
+            <stringProp name="Argument.name">DT_LTN</stringProp>
+            <stringProp name="Argument.value">Default</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -64,10 +69,18 @@ import java.util;
 // Generate the x-dynatrace-test header based on this best practic
 // -&gt; https://www.dynatrace.com/support/help/integrations/test-automation-frameworks/how-do-i-integrate-dynatrace-into-my-load-testing-process/
 // -------------------------------------------------------------------------------------
-String SN = (bsh.args.length &gt; 0) ? bsh.args[0] : &quot;Test Scenario&quot;;
+String LTN=JMeterUtils.getProperty(&quot;DT_LTN&quot;);
+if((LTN == null) || (LTN.length() == 0)) {
+	if(vars != null) {
+		LTN = vars.get(&quot;DT_LTN&quot;);
+	}
+}
+if(LTN == null) LTN = &quot;NoTestName&quot;;
+
+String LSN = (bsh.args.length &gt; 0) ? bsh.args[0] : &quot;Test Scenario&quot;;
 String TSN = sampler.getName();
 String VU = ctx.getThreadGroup().getName() + ctx.getThreadNum();
-String headerValue = &quot;SN=&quot;+ SN + &quot;;TSN=&quot; + TSN + &quot;;VU=&quot; + VU + &quot;;&quot;;
+String headerValue = &quot;LSN=&quot;+ LSN + &quot;;TSN=&quot; + TSN + &quot;;LTN=&quot; + LTN + &quot;;VU=&quot; + VU + &quot;;&quot;;
 
 // -------------------------------------------
 // Set header
