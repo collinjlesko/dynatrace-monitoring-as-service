@@ -9,7 +9,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="SERVERIP" elementType="Argument">
             <stringProp name="Argument.name">SERVERIP</stringProp>
-            <stringProp name="Argument.value">www.orf.at</stringProp>
+            <stringProp name="Argument.value">172.17.0.1</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="INVOKE_URL_1" elementType="Argument">
