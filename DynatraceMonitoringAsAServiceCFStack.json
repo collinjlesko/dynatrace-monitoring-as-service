@@ -55,7 +55,7 @@
         "DynatraceCustomHostTags" : {
             "Description": "Allows you to specify any number of tags that will be added to the hostautotag.conf file during installation, e.g: MyTag MyEnv=Staging",
             "Type": "String",
-            "Default" : "MyCustomHostTag CreatedBy=TeamDev1 Environment=Dev"
+            "Default" : "Environment=Development DTMaaSHostTag CreatedBy=TeamDev1"
         },
         "DynatraceCustomHostProperties" : {
             "Description" : "Allows you to specify a custom property that will be added to the hostcustomproperties.conf during installation",
@@ -319,7 +319,7 @@
                                                     "echo 'Ready to install & configure tags for OneAgent:'\n",
                                                     "mkdir -p /var/lib/dynatrace/oneagent/agent/config\n",
                                                     "cd /var/lib/dynatrace/oneagent/agent/config\n",
-                                                    "echo \"MaaSHost StackName=",
+                                                    "echo \"StackName=",
                                                     {
                                                         "Ref" : "AWS::StackName"
                                                     },
@@ -328,13 +328,14 @@
                                                         "Ref" : "DynatraceCustomHostTags"
                                                     },
                                                     "\" > hostautotag.conf\n",
+                                                    "cd /\n",
+                                                    "sudo /bin/sh Dynatrace-OneAgent-Linux.sh APP_LOG_CONTENT_ACCESS=1\n",
+                                                    "cd /var/lib/dynatrace/oneagent/agent/config\n",
                                                     "echo \"",
                                                     {
                                                         "Ref" : "DynatraceCustomHostProperties"
                                                     },
-                                                    "\" > hostcustomproperties.conf\n",                                                    
-                                                    "cd /\n",
-                                                    "sudo /bin/sh Dynatrace-OneAgent-Linux.sh APP_LOG_CONTENT_ACCESS=1\n"
+                                                    "\" > hostcustomproperties.conf\n"                                                  
                                                 ]
                                             ]
                                         },

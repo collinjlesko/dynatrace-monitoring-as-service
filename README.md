@@ -253,7 +253,14 @@ The Dynatrace CLI implements a couple of use cases to pull, compare or even pull
 2. Pull the Performance Signature metrics in an automated way
 
 ## Lab 8: Run stack for second environment and validation automation
-Now as we have everything correctly setup and configured for our first environment lets do the same thing for a second enviornment:
+Now as we have everything correctly setup and configured for our first environment lets do the same thing for a second enviornment like this
+
+**Step 1: Create second enviornment, e.g: Staging**
+1. Create a new CF Stack based on the same CF Template
+2. Create a new stack based on the same CF Template and call it "DTMaaSLab8"
+3. Select YES to install OneAgent and Dynatrace CLI
+4. For "DynatraceCustomHostProperties" specify "Environment=Staging"
+5. Lets create the stack and explore what we see in Dynatrace
 
 
 ## Lab 9: Setup Notification Integration
