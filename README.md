@@ -199,6 +199,9 @@ It will take about 30s until the tags are automatically applied to the services.
 
 ![](./images/lab4_serviceview_with_servicetypetag.jpg)
 
+**Step 3: Create Tagging Rule for Environment**
+Define a Service-level tagging rule for a tag called "Environment".  Extract the Tag Value from the Process Group's Environment value "Enviornment". Make sure to only apply this rule if ProcessGroup:Environment exists!
+
 **Lab Lesson Learned**
 1. Create automated tagging rules to apply tags to services
 
