@@ -8,7 +8,7 @@
                 "tags" : [
                     {
                         "context" : "Environment",
-                        "key" : "MaaSHost"
+                        "key" : "DTMaaSHostTag"
                     }
                 ]
             }

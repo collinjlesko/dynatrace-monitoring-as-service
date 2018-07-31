@@ -335,7 +335,15 @@
                                                     {
                                                         "Ref" : "DynatraceCustomHostProperties"
                                                     },
-                                                    "\" > hostcustomproperties.conf\n"                                                  
+                                                    "\" > hostcustomproperties.conf\n",
+                                                    "cd /home/ec2-user\n",
+                                                    "echo \"export ",
+                                                    {
+                                                        "Ref" : "DynatraceCustomHostProperties"
+                                                    },
+                                                    "\" > setenv.sh\n",
+                                                    "chmod +x setenv.sh\n",
+                                                    "source setenv.sh\n"
                                                 ]
                                             ]
                                         },
