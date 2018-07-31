@@ -1,8 +1,8 @@
 #!/bin/bash
 # Will Run 4 Frontends - 2 with Build 1 and 2 with Build 2
 
-if [ -f ./setenv.sh ]; then
-  source ./setenv.sh
+if [ -f ../setenv.sh ]; then
+  source ../setenv.sh
 fi
 
 cd frontend-app
