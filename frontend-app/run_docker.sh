@@ -31,13 +31,13 @@ do
   echo "$INSTANCE_NAME:$BIND_PORT - BUILD: $BUILD_NUMBER"
 
   # RAW: This is the "plain" regular launch of a container - nothing specific to Dynatrace OneAgent
-  sudo docker run --name $INSTANCE_NAME -p $BIND_PORT:80 -e BUILD_NUMBER=$BUILD_NUMBER -d frontend-app:latest
+  # sudo docker run --name $INSTANCE_NAME -p $BIND_PORT:80 -e BUILD_NUMBER=$BUILD_NUMBER -d frontend-app:latest
 
   # Step 1: the following line is to ENABLE Dynatrace OneAgent Custom Tagging and Custom Meta Data Passing
   # sudo docker run --name $INSTANCE_NAME -p $BIND_PORT:80 -e BUILD_NUMBER=$BUILD_NUMBER -e DT_TAGS="SERVICE_TYPE=FRONTEND" -e DT_CUSTOM_PROP="SERVICE_TYPE=FRONTEND BUILD_NUMBER=$BUILD_NUMBER BIND_PORT=$BIND_PORT ENVIRONMENT=$Environment" -d frontend-app:latest
 
   # Step 2: the following line leverages DT_NODE_ID to differentiate each individual container instance as its own Process Group Instance
-  # sudo docker run --name $INSTANCE_NAME -p $BIND_PORT:80 -e BUILD_NUMBER=$BUILD_NUMBER -e DT_NODE_ID=$BUILD_NUMBER -e DT_TAGS="SERVICE_TYPE=FRONTEND" -e DT_CUSTOM_PROP="SERVICE_TYPE=FRONTEND BUILD_NUMBER=$BUILD_NUMBER BIND_PORT=$BIND_PORT ENVIRONMENT=$Environment" -d frontend-app:latest
+    sudo docker run --name $INSTANCE_NAME -p $BIND_PORT:80 -e BUILD_NUMBER=$BUILD_NUMBER -e DT_NODE_ID=$BUILD_NUMBER -e DT_TAGS="SERVICE_TYPE=FRONTEND" -e DT_CUSTOM_PROP="SERVICE_TYPE=FRONTEND BUILD_NUMBER=$BUILD_NUMBER BIND_PORT=$BIND_PORT ENVIRONMENT=$Environment" -d frontend-app:latest
 
   BIND_PORT=$(($BIND_PORT+1))
 done
